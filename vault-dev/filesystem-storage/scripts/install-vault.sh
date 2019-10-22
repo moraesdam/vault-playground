@@ -29,6 +29,7 @@ echo "$(${VAULT_PATH} --version)"
 
 echo "Configuring Vault ${VAULT_VERSION}"
 sudo mkdir -pm 0755 ${VAULT_CONFIG_DIR} ${VAULT_DATA_DIR} ${VAULT_TLS_DIR}
+sudo touch ${VAULT_ENV_VARS}
 
 echo "Set filesystem storage backend"
 sudo tee ${VAULT_CONFIG_FILE} > /dev/null <<CONFIGFILE
