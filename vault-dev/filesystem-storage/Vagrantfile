@@ -1,0 +1,75 @@
+# Networking
+private_ip = ENV['PRIVATE_IP'] || "192.168.50.152"
+
+# Base box selection
+base_box = ENV['BASE_BOX'] || "bento/ubuntu-16.04"
+
+# Vault variables
+vault_host_port = ENV['VAULT_HOST_PORT'] || 8200
+vault_version = ENV['VAULT_VERSION'] || "1.2.3"
+vault_ent_url = ENV['VAULT_ENT_URL']
+vault_group = "vault"
+vault_user = "vault"
+vault_comment = "Vault"
+vault_home = "/srv/vault"
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = base_box
+  config.vm.hostname = "vault"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "512"
+  end
+
+  config.vm.network :private_network, ip: private_ip
+  config.vm.network "private_network", type: "dhcp"
+  config.vm.network :forwarded_port, guest: 8200, host: vault_host_port, auto_correct: true
+
+  # Use vagrant insecure public key, comment this out to restrict access
+  config.ssh.insert_key = false
+
+  # Bootstrap the vm
+  config.vm.provision "shell", path: "https://raw.githubusercontent.com/moraesdam/vault-playground/master/shared/scripts/base.sh"
+  
+  # Setup Vault user
+  config.vm.provision "shell", path: "https://raw.githubusercontent.com/moraesdam/vault-playground/master/shared/scripts/setup-user.sh",
+    env: {
+      "GROUP" => vault_group,
+      "USER" => vault_user,
+      "COMMENT" => vault_comment,
+      "HOME" => vault_home,
+    }
+
+  # Install Vault
+  config.vm.provision "shell", path: "https://raw.githubusercontent.com/moraesdam/vault-playground/master/vault-dev/filesystem-storage/scripts/install-vault.sh",
+    env: {
+      "VERSION" => vault_version,
+      "URL" => vault_ent_url,
+      "USER" => vault_user,
+      "GROUP" => vault_group,
+    }
+
+  config.vm.provision "shell", path: "scripts/install-vault-systemd.sh"
+
+  config.vm.post_up_message = "
+Your Vault dev server has been successfully provisioned!
+To SSH into a Vault host, run the below command.
+  $ vagrant ssh
+You can interact with Vault using any of the CLI (https://www.vaultproject.io/docs/commands/index.html)
+or API (https://www.vaultproject.io/api/index.html) commands.
+  # The Root token for your Vault instance is set to `root` and placed in /srv/vault/.vault-token,
+  # the `VAULT_TOKEN` environment variable has already been set for you
+  $ echo $VAULT_TOKEN
+  $ sudo cat /srv/vault/.vault-token
+  # Use the CLI to write and read a generic secret
+  $ vault kv put secret/cli foo=bar
+  $ vault kv get secret/cli
+  # Use the API to write and read a generic secret
+  $ curl -H \"X-Vault-Token: $VAULT_TOKEN\" -X POST -d '{\"data\": {\"bar\":\"baz\"}}' http://127.0.0.1:8200/v1/secret/data/api | jq '.'
+  $ curl -H \"X-Vault-Token: $VAULT_TOKEN\" http://127.0.0.1:8200/v1/secret/data/api | jq '.'
+Visit the Vault UI: http://#{private_ip}:#{vault_host_port}
+Don't forget to tear your VM down after.
+  $ vagrant destroy
+"
+end
