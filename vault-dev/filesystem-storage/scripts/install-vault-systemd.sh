@@ -21,7 +21,7 @@ else
   exit 1;
 fi
 
-sudo curl --silent -Lo ${SYSTEMD_DIR}/vault.service https://raw.githubusercontent.com/dmoraes/vault-playground/master/vault-dev/filesystem-storage/init/systemd/vault.service
+sudo curl --silent -Lo ${SYSTEMD_DIR}/vault.service https://raw.githubusercontent.com/moraesdam/vault-playground/master/vault-dev/filesystem-storage/init/systemd/vault.service                                               
 sudo chmod 0664 ${SYSTEMD_DIR}/{vault*}
 
 sudo systemctl enable vault
