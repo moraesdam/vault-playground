@@ -4,7 +4,7 @@
 
 set -x
 
-echo "Running"
+echo "Running scripts/install-vault.sh"
 
 VAULT_VERSION=${VERSION}
 VAULT_ZIP=vault_${VAULT_VERSION}_linux_amd64.zip
@@ -34,6 +34,7 @@ echo "Set filesystem storage backend"
 sudo tee ${VAULT_CONFIG_FILE} > /dev/null <<CONFIGFILE
 listener "tcp" {
   address       = "0.0.0.0:8200"
+  tls_disable   = 1
 }
 
 storage "file" {

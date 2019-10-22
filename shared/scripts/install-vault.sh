@@ -4,7 +4,7 @@
 
 set -x
 
-echo "Running"
+echo "Running shared/scripts/install-vault.sh"
 
 VAULT_VERSION=${VERSION}
 VAULT_ZIP=vault_${VAULT_VERSION}_linux_amd64.zip

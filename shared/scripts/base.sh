@@ -4,7 +4,7 @@
 
 set -x
 
-echo "Running"
+echo "Running shared/scripts/base.sh"
 
 echo "Installing jq"
 sudo curl --silent -Lo /bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64

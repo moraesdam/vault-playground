@@ -4,7 +4,7 @@
 
 set -x
 
-echo "Running"
+echo "Running shared/scripts/setup-user.sh"
 
 GROUP="${GROUP:-}"
 USER="${USER:-}"

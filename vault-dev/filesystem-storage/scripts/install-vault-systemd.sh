@@ -4,7 +4,7 @@
 
 set -x
 
-echo "Running"
+echo "Running scripts/install-vault-systemd.sh"
 
 # Detect package management system.
 YUM=$(which yum 2>/dev/null)
